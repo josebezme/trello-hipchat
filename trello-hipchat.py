@@ -172,6 +172,34 @@ def notify(board_id, list_names, room_id):
                 msg(room_id, "%s completed checklist item \"%s\" in card <a href=\"%s\">%s</a>" %
                     (author, ESC(A["data"]["checkItem"]["name"]), card_url, card_name))
 
+        elif A["type"] == "addMemberToCard":
+            card_id_short = A["data"]["card"]["idShort"]
+            card_id = A["data"]["card"]["id"]
+            card_url = "https://trello.com/card/%s/%s/%s" % (card_id, board_id, card_id_short)
+            card_name = ESC(card_name_strip(A["data"]["card"]["name"]))
+            list_name = trello("/cards/%s/list" % card_id)["name"]
+            author = ESC(A["memberCreator"]["fullName"])
+            member = ESC(A["member"]["fullName"])
+            if not card_in_lists(list_name, list_names):
+                continue
+
+            msg(room_id, "%s added %s to card <a href=\"%s\">%s</a>" %
+                    (author, member, card_url, card_name))
+
+        elif A["type"] == "removeMemberFromCard":
+            card_id_short = A["data"]["card"]["idShort"]
+            card_id = A["data"]["card"]["id"]
+            card_url = "https://trello.com/card/%s/%s/%s" % (card_id, board_id, card_id_short)
+            card_name = ESC(card_name_strip(A["data"]["card"]["name"]))
+            list_name = trello("/cards/%s/list" % card_id)["name"]
+            author = ESC(A["memberCreator"]["fullName"])
+            member = ESC(A["member"]["fullName"])
+            if not card_in_lists(list_name, list_names):
+                continue
+
+            msg(room_id, "%s removed %s from card <a href=\"%s\">%s</a>" %
+                    (author, member, card_url, card_name))
+
         elif A["type"] == "createCard":
             card_id_short = A["data"]["card"]["idShort"]
             card_id = A["data"]["card"]["id"]
