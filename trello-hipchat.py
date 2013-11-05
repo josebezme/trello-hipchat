@@ -143,22 +143,20 @@ def notify(board_id, list_names, room_id):
             card_name = ESC(card_name_strip(A["data"]["card"]["name"]))
             author = ESC(A["memberCreator"]["fullName"])
 
-            if "idList" in A["data"]["old"] and \
-               "idList" in A["data"]["card"]:
+            if "listAfter" in A["data"] and \
+               "listBefore" in A["data"]:
                 # Move between lists
-                old_list_id = A["data"]["old"]["idList"]
-                new_list_id = A["data"]["card"]["idList"]
-                n1 = trello("/list/%s" % old_list_id)["name"]
-                n2 = trello("/list/%s" % new_list_id)["name"]
+                before = A["data"]["listBefore"]["name"]
+                after = A["data"]["listAfter"]["name"]
 
-                if not card_in_lists(n1, list_names) and not card_in_lists(n2, list_names):
+                if not card_in_lists(before, list_names) and not card_in_lists(after, list_names):
                     continue
 
-                n1 = ESC(n1)
-                n2 = ESC(n2)
+                before = ESC(before)
+                after = ESC(after)
 
                 msg(room_id, "%s moved card <a href=\"%s\">%s</a> from list \"%s\" to list \"%s\"" % (
-                    author, card_url, card_name, n1, n2))
+                    author, card_url, card_name, before, after))
 
         elif A["type"] == "updateCheckItemStateOnCard":
             card_id_short = A["data"]["card"]["idShort"]
